@@ -26,6 +26,7 @@ box::box( int box_width, int box_height, int box_x_pos, int box_y_pos ){
 }
 
 bool is_running ;
+int mouse_count = 0 ;
 box b1( 20, 20, 0, 0 ); 
 
 void setup( void ){
@@ -48,40 +49,48 @@ void setup( void ){
 void process_input( void ){
     
     SDL_Event event ;
-    SDL_PollEvent( &event ) ;
 
-    switch( event.type ){
-        case SDL_QUIT:              // 'x' button pressed on the window
-            is_running = false ;
-            break ;
+    while( SDL_PollEvent( &event ) ){
 
-        case SDL_KEYDOWN:           // a key was pressed on the keyboard
-            
-            switch( event.key.keysym.sym ){    
-                case SDLK_ESCAPE : case SDLK_q :
-                    is_running = false ;
-                    break;
+        switch( event.type ){
+            case SDL_QUIT:              // 'x' button pressed on the window
+                is_running = false ;
+                break ;
+
+            case SDL_KEYDOWN:           // a key was pressed on the keyboard
                 
-                case SDLK_w:
-                    b1.x -= 20 ;
-                    break ;
-                
-                case SDLK_a:
-                    b1.y -= 20 ;
-                    break ;
+                switch( event.key.keysym.sym ){    
+                    case SDLK_ESCAPE : case SDLK_q :
+                        is_running = false ;
+                        break;
+                    
+                    case SDLK_w:
+                        b1.x -= 20 ;
+                        break ;
+                    
+                    case SDLK_a:
+                        b1.y -= 20 ;
+                        break ;
 
-                case SDLK_s:
-                    b1.x += 20 ;
-                    break ;
+                    case SDLK_s:
+                        b1.x += 20 ;
+                        break ;
 
-                case SDLK_d:
-                    b1.y += 20 ;
-                    break ;
-            }
+                    case SDLK_d:
+                        b1.y += 20 ;
+                        break ;
+                }
 
+                break ;
 
-            break ;
+            case SDL_MOUSEMOTION:
+                std::cout << "mouse_motion " << mouse_count << " \n" ;
+                mouse_count++;
+                break;
+        }
+
     }
+    
 }
 
 void update ( void ){

@@ -12,7 +12,7 @@ void color_buffer::clear( uint32_t color ){
 
     for( i = 0 ; i < rester_width ; i++ ){
         for( j = 0 ; j < rester_height ; j++ ){
-            p[ i + j * rester_width ] = color ;
+            pixel( i, j, color ) ;
         }
     }        
     
@@ -26,14 +26,14 @@ void color_buffer::grid( int h_spacing, int v_spacing, uint32_t color ){
     // print horizontal lines
     for( i = v_spacing ; i < rester_height ; i+= v_spacing ){
         for( j = 0 ; j < rester_width ; j++ ){
-            p[ i * rester_width + j ] = color ;
+            pixel( j, i, color ) ;
         }
     }
 
     // print horizontal lines
     for( i = 0 ; i < rester_height ; i++ ){
         for( j = h_spacing ; j < rester_width ; j += h_spacing ){
-            p[ i * rester_width + j ] = color ;
+            pixel( j, i, color ) ;
         }
     }
 }
@@ -45,15 +45,15 @@ void color_buffer::rectangle( int x0, int y0, int width, int height, uint32_t co
 
     for( i = x0 ; i < ( x0 + height ) ; i++ ){
         for( j = y0 ; j < ( y0 + width ) ; j++ ){
-                        
-            p[ i * rester_width + j ] = color ;
+            pixel( j, i, color ) ;
         }
     }
-
 
 }
 
 // draws a pixel on the screen
 void color_buffer::pixel( int x, int y, uint32_t color ){
-    p[ x + y * rester_width ] = color ;
+    
+    if( x >= 0 && x < rester_width && y >=0 && y < rester_height)
+        p[ x + y * rester_width ] = color ;
 }
