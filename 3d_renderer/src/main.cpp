@@ -1,52 +1,32 @@
-
 #include <iostream>
 #include <SDL2/SDL.h>   // include SDL 
+
 #include "rester.hpp"
+#include "display.hpp"
 
-SDL_Window * window = NULL ;
-SDL_Renderer * renderer = NULL ;
-SDL_Texture * color_buffer_texture = NULL ;
+class box{
 
-color_buffer rester;
+    public:
+        int width ;
+        int height ;
+
+        int x ;
+        int y ;
+        
+        box( int, int, int, int ) ;
+
+} ;
+
+box::box( int box_width, int box_height, int box_x_pos, int box_y_pos ){
+    
+    width = box_width ;
+    height = box_height ;
+    x = box_x_pos ;
+    y = box_y_pos ;
+}
 
 bool is_running ;
-
-int window_width = 800 ;
-int window_height = 600 ;
-
-bool init_window( void ){
-
-    // error in initizalization
-    if ( SDL_Init( SDL_INIT_EVERYTHING ) != 0){
-        std::cerr << "[ERROR] : SLD_Init() \n" ;
-        return false;
-    } ;    
-
-    // create an SDL window
-    window = SDL_CreateWindow( 
-        NULL,
-        SDL_WINDOWPOS_CENTERED, 
-        SDL_WINDOWPOS_CENTERED, 
-        window_width, 
-        window_height,
-        SDL_WINDOW_BORDERLESS
-    );
-
-    if ( window == NULL){
-        std::cerr << "[ERROR] : SDL_CreateWindow() \n" ;
-        return false;
-    }
-
-    // create an SDL renderer
-    renderer = SDL_CreateRenderer( window, -1, 0 );
-
-    if( renderer == NULL ){
-        std::cerr << "[ERROR] : SDL_CreateRenderer() \n" ;
-        return false;
-    }    
-
-    return true;   // everything went ok
-}
+box b1( 20, 20, 0, 0 ); 
 
 void setup( void ){
     
@@ -60,6 +40,8 @@ void setup( void ){
         window_width, 
         window_height
     ) ;
+
+    rester.clear( BLACK ); 
 
 }
 
@@ -79,7 +61,24 @@ void process_input( void ){
                 case SDLK_ESCAPE : case SDLK_q :
                     is_running = false ;
                     break;
+                
+                case SDLK_w:
+                    b1.x -= 20 ;
+                    break ;
+                
+                case SDLK_a:
+                    b1.y -= 20 ;
+                    break ;
+
+                case SDLK_s:
+                    b1.x += 20 ;
+                    break ;
+
+                case SDLK_d:
+                    b1.y += 20 ;
+                    break ;
             }
+
 
             break ;
     }
@@ -87,10 +86,6 @@ void process_input( void ){
 
 void update ( void ){
     
-    rester.clear( BLACK ); 
-
-    rester.grid( 20, 20, PINK_1 ) ;
-
     SDL_UpdateTexture(
         color_buffer_texture, 
         NULL, 
@@ -100,16 +95,17 @@ void update ( void ){
 
 }
 
-void render_color_buffer(){
-    
-    SDL_RenderCopy( renderer, color_buffer_texture, NULL, NULL ) ;
-    
-}
 
 void render ( void ){
     
     //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255 ) ;     // paint it red!
     //SDL_RenderClear(renderer);
+
+    rester.clear( BLACK ); 
+
+    rester.rectangle( b1.x, b1.y, b1.width , b1.height, BLUE_2 ) ;
+    
+    rester.grid( 20, 20, PINK_1 ) ;
 
     render_color_buffer();
     
@@ -117,24 +113,11 @@ void render ( void ){
 }
 
 
-
-void destroy_window( void ){
-
-    delete rester.p ;
-
-    SDL_DestroyRenderer( renderer ) ;
-    SDL_DestroyWindow( window ) ;
-    SDL_Quit() ;
-
-}
-
-
-
 int main( void ){
     
     // create an SDL window
     is_running = init_window() ;
-
+    
     setup() ;
 
     while( is_running ){    

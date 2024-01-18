@@ -1,3 +1,6 @@
+#ifndef RESTER_H
+#define RESTER_H
+
 #include <iostream>
 
 #define BLUE_1      0xFF00fff9
@@ -13,12 +16,14 @@ class color_buffer{
 
     public:
         uint32_t * p ;
-        int width ;
-        int height ; 
+        int rester_width ;
+        int rester_height ; 
 
         void init( int, int ) ;
         void clear( uint32_t ) ;
         void grid( int, int, uint32_t ) ; 
+        void rectangle( int, int, int, int, uint32_t ) ;
+        void pixel( int, int, uint32_t ) ;
 } ;
 
-
+#endif

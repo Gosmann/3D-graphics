@@ -1,18 +1,18 @@
 #include "rester.hpp"
 
 void color_buffer::init( int x, int y ){
-    width = x ;
-    height = y ;
+    rester_width = x ;
+    rester_height = y ;
 
-    p = new uint32_t[ width * height ] ;
+    p = new uint32_t[ rester_width * rester_height ] ;
 }
 
 void color_buffer::clear( uint32_t color ){
     int i, j ;
 
-    for( i = 0 ; i < width ; i++ ){
-        for( j = 0 ; j < height ; j++ ){
-            p[ i + j * width ] = color ;
+    for( i = 0 ; i < rester_width ; i++ ){
+        for( j = 0 ; j < rester_height ; j++ ){
+            p[ i + j * rester_width ] = color ;
         }
     }        
     
@@ -24,16 +24,36 @@ void color_buffer::grid( int h_spacing, int v_spacing, uint32_t color ){
     int i, j ;
     
     // print horizontal lines
-    for( i = v_spacing ; i < height ; i+= v_spacing ){
-        for( j = 0 ; j < width ; j++ ){
-            p[ i * width + j ] = color ;
+    for( i = v_spacing ; i < rester_height ; i+= v_spacing ){
+        for( j = 0 ; j < rester_width ; j++ ){
+            p[ i * rester_width + j ] = color ;
         }
     }
 
     // print horizontal lines
-    for( i = 0 ; i < height ; i++ ){
-        for( j = h_spacing ; j < width ; j+=h_spacing ){
-            p[ i * width + j ] = color ;
+    for( i = 0 ; i < rester_height ; i++ ){
+        for( j = h_spacing ; j < rester_width ; j += h_spacing ){
+            p[ i * rester_width + j ] = color ;
         }
     }
+}
+
+
+// draws a rectangle on the screen
+void color_buffer::rectangle( int x0, int y0, int width, int height, uint32_t color){
+    int i, j;
+
+    for( i = x0 ; i < ( x0 + height ) ; i++ ){
+        for( j = y0 ; j < ( y0 + width ) ; j++ ){
+                        
+            p[ i * rester_width + j ] = color ;
+        }
+    }
+
+
+}
+
+// draws a pixel on the screen
+void color_buffer::pixel( int x, int y, uint32_t color ){
+    p[ x + y * rester_width ] = color ;
 }
