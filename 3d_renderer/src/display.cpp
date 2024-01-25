@@ -9,6 +9,7 @@ int window_height = 600 ;
 
 color_buffer rester;
 
+
 bool init_window( void ){
 
     // error in initizalization

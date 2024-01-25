@@ -45,7 +45,7 @@ void color_buffer::rectangle( int x0, int y0, int width, int height, uint32_t co
 
     for( i = x0 ; i < ( x0 + height ) ; i++ ){
         for( j = y0 ; j < ( y0 + width ) ; j++ ){
-            pixel( j, i, color ) ;
+            pixel( i, j, color ) ;
         }
     }
 

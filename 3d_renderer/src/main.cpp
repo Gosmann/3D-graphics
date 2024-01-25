@@ -3,6 +3,23 @@
 
 #include "rester.hpp"
 #include "display.hpp"
+#include "vector.hpp"
+
+const int FPS_TARGET = 30 ;
+const int FRAME_TARGET_TIME = (1000 / FPS_TARGET) ;
+
+const int N_POINTS = 9 * 9 * 9 ;
+
+vect3d_t points[ N_POINTS ] ;
+vect2d_t projected_points[ N_POINTS ] ;
+
+vect3d_t camera_position = { .x = 0 , .y = 0, .z = -4.0 } ;
+
+vect3d_t cube_rotation = { 0 ,  0, 0 } ;
+
+const float ROTATION_STEP = 0.05 ;
+
+int previous_frame_time = 0 ;
 
 class box{
 
@@ -34,6 +51,21 @@ void setup( void ){
     // allocates memory for rester
     rester.init( window_width, window_height ) ;    
      
+    // populates the cloud points
+    float i, j, k; 
+    int point_count = 0;
+
+    for( i = -1.0 ; i <= 1.0 ; i += 0.25 ){
+        for( j = -1.0 ; j <= 1.0 ; j += 0.25 ){
+            for( k = -1.0 ; k <= 1.0 ; k += 0.25 ){
+                vect3d_t new_point = {.x = i, .y = j, .z = k} ;
+                
+                points[point_count] = new_point ;
+                point_count++;
+            }
+        }
+    }
+
     color_buffer_texture = SDL_CreateTexture( 
         renderer, 
         SDL_PIXELFORMAT_ARGB8888,  
@@ -65,19 +97,19 @@ void process_input( void ){
                         break;
                     
                     case SDLK_w:
-                        b1.x -= 20 ;
+                        cube_rotation.x -= ROTATION_STEP ;
                         break ;
                     
                     case SDLK_a:
-                        b1.y -= 20 ;
+                        cube_rotation.y += ROTATION_STEP ;
                         break ;
 
                     case SDLK_s:
-                        b1.x += 20 ;
+                        cube_rotation.x += ROTATION_STEP ;
                         break ;
 
                     case SDLK_d:
-                        b1.y += 20 ;
+                        cube_rotation.y -= ROTATION_STEP ;
                         break ;
                 }
 
@@ -93,14 +125,46 @@ void process_input( void ){
     
 }
 
+
 void update ( void ){
     
+    // project elements on the screen
+    int i;
+    for(i = 0 ; i < N_POINTS ; i++){
+
+        // rotate point
+        vect3d_t point = points[i] ;
+
+        point = points[i].rotate_x( cube_rotation.x );
+        point = point.rotate_y( cube_rotation.y );
+        point = point.rotate_z( cube_rotation.z ); 
+
+        // move points away from the camera
+        point.x -= camera_position.x ;
+        point.y -= camera_position.y ;
+        point.z -= camera_position.z ;
+
+        vect2d_t projected_point = point.project() ;
+        
+        projected_points[i] = projected_point ;
+    }
+
     SDL_UpdateTexture(
         color_buffer_texture, 
         NULL, 
         rester.p,
         (int)(window_width * sizeof( uint32_t ) )
     );
+
+    int time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - previous_frame_time );
+
+    if( time_to_wait > 0 && time_to_wait <= FRAME_TARGET_TIME ){
+        SDL_Delay(time_to_wait) ;
+    }
+    
+    previous_frame_time = SDL_GetTicks() ;
+    
+
 
 }
 
@@ -112,9 +176,18 @@ void render ( void ){
 
     rester.clear( BLACK ); 
 
-    rester.rectangle( b1.x, b1.y, b1.width , b1.height, BLUE_2 ) ;
+    int i;
+    for( i = 0 ; i < N_POINTS ; i++){
+                
+        rester.rectangle(
+            projected_points[i].x + window_width / 2,
+            projected_points[i].y + window_height / 2,
+            2  ,
+            2  ,
+            BLUE_2 ) ;       
+    }
     
-    rester.grid( 20, 20, PINK_1 ) ;
+    //rester.grid( 20, 20, PINK_1 ) ;
 
     render_color_buffer();
     
