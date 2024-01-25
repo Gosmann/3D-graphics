@@ -8,16 +8,16 @@
 const int FPS_TARGET = 30 ;
 const int FRAME_TARGET_TIME = (1000 / FPS_TARGET) ;
 
-const int N_POINTS = 9 * 9 * 9 ;
+const int GROUND_POINTS = 19 * 19 ;
 
-vect3d_t points[ N_POINTS ] ;
-vect2d_t projected_points[ N_POINTS ] ;
+vect3d_t ground[ GROUND_POINTS ] ;
+vect2d_t projected_ground[ GROUND_POINTS ] ;
 
-vect3d_t camera_position = { .x = 0 , .y = 0, .z = -4.0 } ;
-
-vect3d_t cube_rotation = { 0 ,  0, 0 } ;
+vect3d_t camera_position = { .x = 0 , .y = 0, .z = -15.0 } ;
 
 const float ROTATION_STEP = 0.05 ;
+
+vect3d_t cube_rotation = { ROTATION_STEP * 7 ,  0, 0 } ;
 
 int previous_frame_time = 0 ;
 
@@ -55,14 +55,14 @@ void setup( void ){
     float i, j, k; 
     int point_count = 0;
 
-    for( i = -1.0 ; i <= 1.0 ; i += 0.25 ){
-        for( j = -1.0 ; j <= 1.0 ; j += 0.25 ){
-            for( k = -1.0 ; k <= 1.0 ; k += 0.25 ){
-                vect3d_t new_point = {.x = i, .y = j, .z = k} ;
-                
-                points[point_count] = new_point ;
-                point_count++;
-            }
+    for( i = -10.0 ; i <= 10.0 ; i += 1.111 ){
+        for( j = -10.0 ; j <= 10.0 ; j += 1.111 ){
+            
+            vect3d_t new_point = {.x = i, .y = 0, .z = j} ;
+            
+            ground[point_count] = new_point ;
+            point_count++;
+        
         }
     }
 
@@ -130,12 +130,14 @@ void update ( void ){
     
     // project elements on the screen
     int i;
-    for(i = 0 ; i < N_POINTS ; i++){
+
+    // update ground elements
+    for(i = 0 ; i < GROUND_POINTS ; i++){
 
         // rotate point
-        vect3d_t point = points[i] ;
+        vect3d_t point = ground[i] ;
 
-        point = points[i].rotate_x( cube_rotation.x );
+        point = ground[i].rotate_x( cube_rotation.x );
         point = point.rotate_y( cube_rotation.y );
         point = point.rotate_z( cube_rotation.z ); 
 
@@ -146,7 +148,8 @@ void update ( void ){
 
         vect2d_t projected_point = point.project() ;
         
-        projected_points[i] = projected_point ;
+        projected_ground[i] = projected_point ;
+        
     }
 
     SDL_UpdateTexture(
@@ -162,6 +165,7 @@ void update ( void ){
         SDL_Delay(time_to_wait) ;
     }
     
+    std::cout << "FPS: " << 1.0 / ((SDL_GetTicks() - previous_frame_time )/1000.0) << "\n";
     previous_frame_time = SDL_GetTicks() ;
     
 
@@ -177,17 +181,45 @@ void render ( void ){
     rester.clear( BLACK ); 
 
     int i;
-    for( i = 0 ; i < N_POINTS ; i++){
-                
+    for( i = 0 ; i < GROUND_POINTS ; i++){
+
+        vect2d_t pt1 = projected_ground[i] ;
+        pt1.x += window_width / 2;
+        pt1.y += window_height / 2;
+        
         rester.rectangle(
-            projected_points[i].x + window_width / 2,
-            projected_points[i].y + window_height / 2,
-            2  ,
-            2  ,
-            BLUE_2 ) ;       
+            pt1.x,
+            pt1.y,
+            1  ,
+            1  ,
+            PINK_1 ) ;       
+
+        if( (i+1) % 19 != 0 ){
+            
+            vect2d_t pt2 = projected_ground[i+1] ; 
+            pt2.x += window_width / 2;
+            pt2.y += window_height / 2;
+            
+            rester.line( pt1.x, pt1.y, pt2.x, pt2.y, PINK_1 ) ;
+            
+        }
+
+        if( (i+19) < GROUND_POINTS ){
+            
+            vect2d_t pt2 = projected_ground[ i + 19 ] ; 
+            pt2.x += window_width / 2;
+            pt2.y += window_height / 2;
+            
+            rester.line( pt1.x, pt1.y, pt2.x, pt2.y, PINK_1 ) ;
+            
+        }   
     }
     
+
+
     //rester.grid( 20, 20, PINK_1 ) ;
+
+    
 
     render_color_buffer();
     

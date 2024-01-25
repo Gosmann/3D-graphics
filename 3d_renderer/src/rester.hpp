@@ -24,6 +24,7 @@ class color_buffer{
         void grid( int, int, uint32_t ) ; 
         void rectangle( int, int, int, int, uint32_t ) ;
         void pixel( int, int, uint32_t ) ;
+        int line( int, int, int, int, uint32_t ) ;
 } ;
 
 #endif

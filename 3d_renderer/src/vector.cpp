@@ -1,7 +1,7 @@
 #include "vector.hpp"
 #include <math.h>
 
-const float fov_factor = 320 ;
+const float fov_factor = 800 ;
 
 vect2d_t::vect2d_t( float component_x, float component_y ){
     x = component_x ;
