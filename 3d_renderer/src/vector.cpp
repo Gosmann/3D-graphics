@@ -15,12 +15,21 @@ vect2d_t::vect2d_t( void ){
 
 // just ignore the z component
 vect2d_t vect3d_t::project( void ){
-
+    
     vect2d_t projection_2d( 
         ( x * fov_factor ) / z ,
         ( y * fov_factor ) / z ) ; 
 
     return projection_2d ;
+}
+
+bool vect3d_t::is_visible( float threshold ){
+    if( z < threshold ){
+        return true ;
+    }
+    else{
+        return false ;
+    }
 }
 
 vect3d_t vect3d_t::rotate_x( float angle ){

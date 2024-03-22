@@ -72,7 +72,11 @@ int color_buffer::line( int x0, int y0, int x1, int y1, uint32_t color ){
 
     }
     else{
-        //return -1;
+        return -1;
+        if( x0 < 0 ) x0 = 0 ;  
+        if( x0 >= rester_width ) x0 = rester_width ; 
+        if( y0 < 0 ) y0 = 0 ;  
+        if( y0 >= rester_width ) y0 = rester_width ; 
     }
 
     int delta_x = (x1 - x0) ;
