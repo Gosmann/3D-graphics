@@ -10,7 +10,7 @@ const int FPS_TARGET = 30 ;
 const int FRAME_TARGET_TIME = (1000 / FPS_TARGET) ;
 
 
-vect3d_t camera_position = { .x = 0 , .y = 1, .z = 30.0 } ;
+vect3d_t camera_position ( 0, 1, 30.0 ) ;
 
 const float ROTATION_STEP = 0.05 ;
 const float POS_STEP = 0.50 ;
@@ -248,25 +248,15 @@ int main( void ){
     
     setup() ;
 
-    
+    vect3d_t a(1, 0, 0 );
+    vect3d_t b(0, 1, 0 );
 
-/*
-    int i;
+    vect3d_t c = a * b ;
 
-    std::cout << "print_vertices : \n";
-    for(i = 0 ; i < 8 ; i++ ){
-        std::cout << " x: " << cube1.mesh.vertices[i].x << "| y : " << cube1.mesh.vertices[i].y << "| z : " << cube1.mesh.vertices[i].z << " \n" ;
-    }
+    std::cout << c.x << " " << c.y << " " << c.z << " \n" ;
 
-    std::cout << "print_faces : \n";
-    for(i = 0 ; i < 6 ; i++ ){
-        std::cout << " " << cube1.mesh.faces[i].indexes[0] << " " << cube1.mesh.faces[i].indexes[1] << 
-                     " " << cube1.mesh.faces[i].indexes[2] << " " << cube1.mesh.faces[i].indexes[3] << " \n" ; 
-    }
-    */
+    is_running = false ;
 
-   //std::cout << (int)cubes.size() << " \n" ;
-    
     while( is_running ){    
 
         process_input();
