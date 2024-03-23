@@ -1,4 +1,6 @@
 #include "vector.hpp"
+#include "display.hpp"
+
 #include <math.h>
 
 const float fov_factor = 800 ;
@@ -20,7 +22,8 @@ vect2d_t vect3d_t::project( void ){
         ( x * fov_factor ) / z ,
         ( y * fov_factor ) / z ) ; 
 
-
+    projection_2d.x += window_width / 2 ;
+    projection_2d.y += window_height / 2 ;
 
     return projection_2d ;
 }

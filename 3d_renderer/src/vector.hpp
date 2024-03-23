@@ -19,8 +19,7 @@ class vect3d_t {
         float z ; 
 
         vect2d_t project( void ) ;
-        bool is_visible( float ) ;
-
+        
         vect3d_t rotate_x( float ) ;
         vect3d_t rotate_y( float ) ;
         vect3d_t rotate_z( float ) ;
