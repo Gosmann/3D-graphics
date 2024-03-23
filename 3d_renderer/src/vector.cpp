@@ -20,16 +20,9 @@ vect2d_t vect3d_t::project( void ){
         ( x * fov_factor ) / z ,
         ( y * fov_factor ) / z ) ; 
 
-    return projection_2d ;
-}
 
-bool vect3d_t::is_visible( float threshold ){
-    if( z < threshold ){
-        return true ;
-    }
-    else{
-        return false ;
-    }
+
+    return projection_2d ;
 }
 
 vect3d_t vect3d_t::rotate_x( float angle ){

@@ -23,14 +23,75 @@ vect3d_t cube_rotation = { ROTATION_STEP * 7 ,  0, 0 } ;
 
 int previous_frame_time = 0 ;
 
-cube_t cube1( {0, 0, 0}, 1.5 ); 
-cube_t cube2( {3, 0, 0}, 1.5 ); 
+
+cube_t cube1( {5, 5, 0}, 3.0 ); 
+cube_t cube2( {0, 0, 0}, 1.5 ); 
 cube_t cube3( {0, 0, 1.5}, 1.5 ); 
 cube_t cube4( {3, 0, 1.5}, 1.5 ); 
 
-std::vector<cube_t> cubes { cube1, cube2, cube3, cube4} ;
+//std::vector<cube_t> cubes { cube1, cube2, cube3, cube4} ;
 
-std::vector<cube_t> gnd_cubes { {{0, -1.5, 0}, 1.5} , {{1.5, -1.5, 0}, 1.5}    } ;
+std::vector<cube_t> gnd_cubes ;
+//std::vector<cube_t> gnd_cubes ;
+
+std::vector<mesh_t> testing ;
+
+void create_cube_grid( ){
+    int i, j ;
+
+    //cube_t base_cube ( {0, 0, 0}, 1 );    
+    mesh_t mesh_test = cube1.mesh ;
+
+    std::cout << "Here! \n" ;
+
+    //gnd_cubes.reserve(100) ;
+    cube_t * p = new cube_t( {1.0, 1.0, 1.0}, 2.0 ); 
+    
+    //gnd_cubes.push_back( *p ) ;
+    
+    
+    for( i = 0 ; i < 1 ; i++ ){
+        for( j = 0 ; j < 10 ; j++){
+            testing.push_back( mesh_test ) ;
+
+            //base_cube.origin.x = 0 ;
+            //base_cube.origin.y = j * 1.0 ;
+            
+            //char (*pchar)[10] = new char[dim][10];
+            
+            //cube_t * p = new cube_t( {1.0, 1.0, 1.0}, 2.0 ); 
+            
+            //gnd_cubes.push_back( p[0] ) ;
+            switch( j ){
+                case 0:
+                    gnd_cubes.push_back( cube1 ) ;
+                    break;
+                case 1:
+                    gnd_cubes.push_back( cube2 ) ;
+                    break;
+                case 2:
+                    gnd_cubes.push_back( cube3 ) ;
+                    break;
+
+                default :
+                    break;
+            }
+                
+            
+            gnd_cubes.push_back( cube4 ) ;
+                    
+            //gnd_cubes.push_back( cube1 ) ;
+            //gnd_cubes.push_back( cube2 ) ;
+        }
+    }
+
+    std::cout << "Done \n" ;
+
+    std::cout << gnd_cubes.size() << " \n";
+
+    //cubes->push_back( {{0, 0, 0}, 1} ) ;
+
+}
 
 bool is_running ;
 
@@ -38,6 +99,8 @@ int mouse_count = 0 ;
 int mouse_wheel = 0 ;
 
 void setup( void ){
+    
+    create_cube_grid(  ) ;
     
     // allocates memory for rester
     rester.init( window_width, window_height ) ;    
@@ -150,36 +213,64 @@ void update ( void ){
     
     // project elements on the screen
     int i, j ;
-
-    projected_ground.clear() ;
-
-    // update ground elements
-    for(i = 0 ; i < GROUND_POINTS ; i++){
-
-        // rotate point
-        vect3d_t point = ground[i] ;
-
-        point = ground[i].rotate_x( cube_rotation.x );
-        point = point.rotate_y( cube_rotation.y );
-        point = point.rotate_z( cube_rotation.z ); 
-
-        // move points away from the camera
-        point.x -= camera_position.x ;
-        point.y -= camera_position.y ;
-        point.z -= camera_position.z ;
-
-        if( point.is_visible( -15.0 ) ){
-            
-            vect2d_t projected_point = point.project() ;
     
-            projected_ground.push_back( projected_point ) ;
+    // update ground elements
+
+    std::cout << "update : " << gnd_cubes.size() << " \n";
+
+    for(i = 0 ; i < gnd_cubes.size() ; i++){
+
+        for(j = 0 ; j < gnd_cubes[i].mesh.vertices.size() ; j++ ){
+            
+            // rotate point
+            vect3d_t point = gnd_cubes[i].mesh.vertices[j] ;
+
+            point = point.rotate_x( cube_rotation.x );
+            point = point.rotate_y( cube_rotation.y );
+            point = point.rotate_z( cube_rotation.z ); 
+
+            // move points away from the camera
+            point.x -= camera_position.x ;
+            point.y -= camera_position.y ;
+            point.z -= camera_position.z ;
+
+            gnd_cubes[i].proj_vertices[j] = point.project() ;
+            
+            gnd_cubes[i].visibility[j] = ( point.z < -5.0 ) ? true : false ;
 
         }
 
-        
     }
 
+    // update ground elements
+    for(i = 0 ; i < testing.size() ; i++){
+
+        for(j = 0 ; j < testing[i].vertices.size() ; j++ ){
+            
+            // rotate point
+            vect3d_t point = testing[i].vertices[j] ;
+
+            point = point.rotate_x( cube_rotation.x );
+            point = point.rotate_y( cube_rotation.y );
+            point = point.rotate_z( cube_rotation.z ); 
+
+            // move points away from the camera
+            point.x -= camera_position.x ;
+            point.y -= camera_position.y ;
+            point.z -= camera_position.z ;
+
+            //gnd_cubes[i].proj_vertices[j] = point.project() ;
+            
+            //gnd_cubes[i].visibility[j] = ( point.z < -5.0 ) ? true : false ;
+
+        }
+
+    }
+
+    
+
     // update cubes
+    /*
     for(i = 0 ; i < cubes.size() ; i++){
 
         for(j = 0 ; j < 8 ; j++){
@@ -203,8 +294,10 @@ void update ( void ){
             
         }    
     }
+    */
 
     // rotate point
+    /*
     vect3d_t point = ground[i] ;
 
     point = ground[i].rotate_x( cube_rotation.x );
@@ -219,7 +312,7 @@ void update ( void ){
     vect2d_t projected_point = point.project() ;
             
     projected_ground[i] = projected_point ;
-
+    */
 
     SDL_UpdateTexture(
         color_buffer_texture, 
@@ -239,7 +332,6 @@ void update ( void ){
     
 }
 
-
 void render ( void ){
     
     //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255 ) ;     // paint it red!
@@ -247,20 +339,70 @@ void render ( void ){
 
     rester.clear( BLACK ); 
 
-    int i, j;
-    for( i = 0 ; i < projected_ground.size() ; i++){
+    int i, j, k;
 
-        vect2d_t pt1 = projected_ground[i] ;
-        pt1.x += window_width / 2;
-        pt1.y += window_height / 2;
+    std::cout << "render : " << gnd_cubes.size() << " \n";
+
+
+    for( i = 0 ; i < gnd_cubes.size() ; i++){
+
+        // render cubes vertices
+
+        for( j = 0 ; j < gnd_cubes[i].proj_vertices.size() ; j++ ){
+
+            vect2d_t pt1 = gnd_cubes[i].proj_vertices[j] ;
+            pt1.x += window_width / 2;
+            pt1.y += window_height / 2;
+            
+            if( gnd_cubes[i].visibility[ j ] )
+
+                rester.rectangle(
+                    pt1.x,
+                    pt1.y,
+                    1  ,
+                    1  ,
+                    PINK_1 ) ;       
         
-        rester.rectangle(
-            pt1.x,
-            pt1.y,
-            1  ,
-            1  ,
-            PINK_1 ) ;       
+        }
 
+        // render cubes faces
+        
+        for( j = 0 ; j < gnd_cubes[i].mesh.faces.size() ; j++ ){
+
+            for( k = 0 ; k < gnd_cubes[i].mesh.faces[j].size() ; k++ ){
+                
+                // vect if vertice if visible
+                //std::cout << gnd_cubes[i].mesh.vertices[ gnd_cubes[i].mesh.faces[j].indexes[k] ].z << "\n" ;
+
+                if( gnd_cubes[i].visibility[ gnd_cubes[i].mesh.faces[j][k] ] ){
+
+                    vect2d_t pt1 = gnd_cubes[i].proj_vertices[ gnd_cubes[i].mesh.faces[j][k] ] ;
+                    pt1.x += window_width / 2;
+                    pt1.y += window_height / 2;
+                    
+                    vect2d_t pt2 ; 
+
+                    if( (k+1) >= gnd_cubes[i].mesh.faces[j].size() )
+                        pt2 = gnd_cubes[i].proj_vertices[ gnd_cubes[i].mesh.faces[j][0] ] ;
+                    else
+                        pt2 = gnd_cubes[i].proj_vertices[ gnd_cubes[i].mesh.faces[j][k+1] ] ;;
+
+                    pt2.x += window_width / 2;
+                    pt2.y += window_height / 2;
+                    
+                    rester.line( pt1.x, pt1.y, pt2.x, pt2.y, PINK_1 ) ;
+
+                }
+
+
+            }
+                    
+        }
+        
+        
+
+
+        /*
         if( (i+1) % 19 != 0 ){
             
             vect2d_t pt2 = projected_ground[i+1] ; 
@@ -280,8 +422,11 @@ void render ( void ){
             rester.line( pt1.x, pt1.y, pt2.x, pt2.y, PINK_1 ) ;
             
         }   
+        */
     }
     
+    /*
+
     // render cubes points
     for(i = 0 ; i < cubes.size() ; i++ ){
         
@@ -385,7 +530,7 @@ void render ( void ){
 
     
     }
-    
+    */
 
     //rester.grid( 20, 20, PINK_1 ) ;
 
@@ -400,6 +545,8 @@ int main( void ){
     is_running = init_window() ;
     
     setup() ;
+
+    
 
 /*
     int i;
@@ -416,7 +563,7 @@ int main( void ){
     }
     */
 
-   std::cout << (int)cubes.size() << " \n" ;
+   //std::cout << (int)cubes.size() << " \n" ;
     
     while( is_running ){    
 
