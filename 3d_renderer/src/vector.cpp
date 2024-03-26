@@ -5,7 +5,7 @@
 
 const float fov_factor = 800 ;
 
-// vect3d_t function
+// vect3d_t functions
 
 float vect2d_t::get_modulus(){
     return std::sqrt( x*x + y*y ) ;
@@ -39,13 +39,18 @@ vect2d_t vect2d_t::operator/( float factor ){
     return div( factor ) ;
 }
 
-// vect3d_t function
+float vect2d_t::dot( vect2d_t b ){
+    return ( x * b.x + y * b.y ) ;
+}
+
+
+// vect3d_t functions
 
 vect2d_t vect3d_t::project( void ){
     
     vect2d_t projection_2d( 
         ( x * fov_factor ) / z ,
-        ( y * fov_factor ) / z ) ; 
+        ( -1 * y * fov_factor ) / z ) ; 
 
     projection_2d.x += window_width / 2 ;
     projection_2d.y += window_height / 2 ;
@@ -83,16 +88,19 @@ vect3d_t vect3d_t::operator/( float factor ){
 
 vect3d_t vect3d_t::cross( vect3d_t b ){
 
-    vect3d_t res ;
-
-    res.x = y * b.z - z * b.y ;
-    res.y = z * b.x - x * b.z ;
-    res.z = x * b.y - y * b.x ;
+    vect3d_t res (
+        y * b.z - z * b.y ,
+        z * b.x - x * b.z ,
+        x * b.y - y * b.x ) ;
 
     return res ;
 }
 vect3d_t vect3d_t::operator*( vect3d_t vector ){
     return cross( vector ) ;
+}
+
+float vect3d_t::dot( vect3d_t b ){
+    return ( x * b.x + y * b.y + z * b.z )  ;
 }
 
 float vect3d_t::get_modulus(){

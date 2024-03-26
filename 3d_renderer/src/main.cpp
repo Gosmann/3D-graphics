@@ -10,17 +10,16 @@ const int FPS_TARGET = 30 ;
 const int FRAME_TARGET_TIME = (1000 / FPS_TARGET) ;
 
 
-vect3d_t camera_position ( 0, 1, 30.0 ) ;
+vect3d_t camera_position ( 0, 0, -10 ) ;
 
 const float ROTATION_STEP = 0.05 ;
 const float POS_STEP = 0.50 ;
 
-vect3d_t cube_rotation = { ROTATION_STEP * 7 ,  0, 0 } ;
+vect3d_t cube_rotation = { ROTATION_STEP * 0 ,  0, 0 } ;
 
 int previous_frame_time = 0 ;
 
-
-cube_t cube1( {1, 1, 0}, 3.0 ); 
+cube_t cube1( {0, 0, 0}, 1.0 ); 
 
 
 std::vector<cube_t> gnd_cubes ;
@@ -52,7 +51,7 @@ int mouse_wheel = 0 ;
 
 void setup( void ){
     
-    create_cube_grid(  ) ;
+    //create_cube_grid(  ) ;
     
     // allocates memory for rester
     rester.init( window_width, window_height ) ;    
@@ -105,19 +104,19 @@ void process_input( void ){
 
 
                     case SDLK_w:
-                        camera_position.z -= POS_STEP ;
+                        camera_position.y += POS_STEP ;
                         break ;
                     
                     case SDLK_a:
-                        camera_position.x -= POS_STEP ;
+                        camera_position.x += POS_STEP ;
                         break ;
 
                     case SDLK_s:
-                        camera_position.z += POS_STEP ;
+                        camera_position.y -= POS_STEP ;
                         break ;
 
                     case SDLK_d:
-                        camera_position.x += POS_STEP ;
+                        camera_position.x -= POS_STEP ;
                         break ;
                     
                 }
@@ -137,7 +136,7 @@ void process_input( void ){
                     mouse_wheel--;
                 }
                 //std::cout << "mouse_wheel " << mouse_wheel << " \n" ;
-                camera_position.y += event.wheel.y * 0.25 ;
+                camera_position.z += event.wheel.y * 0.25 ;
                 break;
 
         }
@@ -149,55 +148,23 @@ void process_input( void ){
 void update ( void ){
     
     // project elements on the screen
-    int i, j ;
+    int i, j, k;
     
     // update ground elements
+
+    // update gnd_cubes
     for(i = 0 ; i < gnd_cubes.size() ; i++){
 
-        for(j = 0 ; j < gnd_cubes[i].vertices.size() ; j++ ){
-            
-            // rotate point
-            vect3d_t point = gnd_cubes[i].vertices[j] ;
-
-            point = point.rotate_x( cube_rotation.x );
-            point = point.rotate_y( cube_rotation.y );
-            point = point.rotate_z( cube_rotation.z ); 
-
-            // move points away from the camera
-            point.x -= camera_position.x ;
-            point.y -= camera_position.y ;
-            point.z -= camera_position.z ;
-
-            gnd_cubes[i].proj_vertices[j] = point.project() ;
-            
-            gnd_cubes[i].visibility[j] = ( point.z < -5.0 ) ? true : false ;
-
-        }
+        // update position ( cube_rotation, camera_position )
+        //gnd_cubes[i].update_position( cube_rotation, camera_position );
 
     }
 
-    // update ground elements
-    for(j = 0 ; j < cube1.vertices.size() ; j++ ){
-        
-        // rotate point
-        vect3d_t point = cube1.vertices[j] ;
+    // update big cube
+    cube1.update_position( cube_rotation, camera_position );    
+    
 
-        point = point.rotate_x( cube_rotation.x );
-        point = point.rotate_y( cube_rotation.y );
-        point = point.rotate_z( cube_rotation.z ); 
-
-        // move points away from the camera
-        point.x -= camera_position.x ;
-        point.y -= camera_position.y ;
-        point.z -= camera_position.z ;
-
-        cube1.proj_vertices[j] = point.project() ;
-        
-        cube1.visibility[j] = ( point.z < -5.0 ) ? true : false ;
-        
-    }
-
-
+    // check backface culling
 
 
     SDL_UpdateTexture(
@@ -213,7 +180,9 @@ void update ( void ){
         SDL_Delay(time_to_wait) ;
     }
     
-    std::cout << "FPS: " << 1.0 / ((SDL_GetTicks() - previous_frame_time )/1000.0) << "\n";
+    //std::cout << "FPS: " << 1.0 / ((SDL_GetTicks() - previous_frame_time )/1000.0) << "\n";
+    //std::cout << camera_position.z << " \n " ;
+    
     previous_frame_time = SDL_GetTicks() ;
     
 }
@@ -226,14 +195,14 @@ void render ( void ){
     // iterates over the elements
     for( i = 0 ; i < gnd_cubes.size() ; i++){
 
-        // render cubes vertices
-        gnd_cubes[i].render_vertices( PINK_1 ) ;
-
         // render cubes faces
         gnd_cubes[i].render_edges( PINK_1 ) ;
+
+        gnd_cubes[i].render_vertices( PINK_1 ) ;
       
     }
 
+    // renders the big cube
     cube1.render_edges( BLUE_2 ) ;
     
     render_color_buffer();
@@ -247,15 +216,6 @@ int main( void ){
     is_running = init_window() ;
     
     setup() ;
-
-    vect3d_t a(1, 0, 0 );
-    vect3d_t b(0, 1, 0 );
-
-    vect3d_t c = a * b ;
-
-    std::cout << c.x << " " << c.y << " " << c.z << " \n" ;
-
-    is_running = false ;
 
     while( is_running ){    
 

@@ -10,17 +10,19 @@ class vect2d_t {
         vect2d_t( float x, float y ) : x(x), y(y) {} ;
         vect2d_t( void ) : x(0), y(0) {} ;
 
-        vect2d_t add( vect2d_t vector2 ) ;
-        vect2d_t operator+( vect2d_t vector2 ) ;
+        vect2d_t add( vect2d_t ) ;
+        vect2d_t operator+( vect2d_t ) ;
         
-        vect2d_t sub( vect2d_t vector2 ) ;
-        vect2d_t operator-( vect2d_t vector2 ) ;
+        vect2d_t sub( vect2d_t ) ;
+        vect2d_t operator-( vect2d_t ) ;
 
         vect2d_t mult( float ) ;
         vect2d_t operator*( float ) ;
         
         vect2d_t div( float ) ;
         vect2d_t operator/( float ) ;
+
+        float dot( vect2d_t ) ;
 
         float get_modulus( ) ;
         
@@ -53,6 +55,8 @@ class vect3d_t {
 
         vect3d_t cross( vect3d_t ) ;
         vect3d_t operator*( vect3d_t ) ;
+
+        float dot( vect3d_t ) ;
 
         float get_modulus( ) ;
 

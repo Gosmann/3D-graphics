@@ -13,6 +13,8 @@ class mesh_t {
         std::vector < vect3d_t > vertices ;                  // holds the vertices of the mesh
         std::vector < std::vector<int> > faces ;             // holds the faces of the mesh 
 
+        std::vector < std::vector <vect2d_t> > faces_to_render ;
+        
         std::vector <vect2d_t> proj_vertices ;               // holds the projected vertices of the cube
         std::vector <bool> visibility ;                      // holds the visibility of the projected vertices
 
@@ -21,7 +23,8 @@ class mesh_t {
         void render_edges( unsigned int color = PINK_1 ) ;
         
         void render_vertices( unsigned int color = PINK_1 ) ;
-        // mesh_t() ;
+        
+        void update_position( vect3d_t rotation, vect3d_t position ) ;
 
 } ;
 
